@@ -4,19 +4,15 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 
 ## 1. What was broken when you started?
 
-- What did the game look like the first time you ran it?
-- List at least two concrete bugs you noticed at the start  
-  (for example: "the hints were backwards").
+The first time I ran `streamlit run app.py`, the game looked fully playable — difficulty selector, a text box for guesses, a submit button — but the feedback it gave was actively wrong. Guessing above the secret number told me to go *higher* (the opposite of what I needed), and every other guess I submitted seemed to get judged by a different rule than the guess before it, as if the game were comparing numbers as text on some turns. The score also crept up oddly slowly even when I was guessing well. Confirmed by reading `app.py` and running its functions directly in a Python shell (see table below).
 
 **Bug Reproduction Log**
 
-Document at least 3 bugs you found. Add rows as needed.
-
 | Input | Expected Behavior | Actual Behavior | Console Output / Error |
 |-------|-------------------|-----------------|------------------------|
-| | | | |
-| | | | |
-| | | | |
+| `check_guess(60, 50)` — guess of 60 against secret 50 | Outcome `"Too High"` with a message telling the player to go **lower** | Outcome `"Too High"` but the message says `"📈 Go HIGHER!"` — the hint direction is backwards | `('Too High', '📈 Go HIGHER!')` |
+| `check_guess(9, "10")` — simulates an even-numbered attempt, where `app.py` silently converts the secret to a string before comparing | Outcome `"Too Low"` (9 is numerically less than 10) | Outcome `"Too High"` — because the secret was turned into a string, the comparison fell into `check_guess`'s `except TypeError` fallback, which compares `"9" > "10"` as **text**, and lexicographically `"9" > "10"` is `True` | `('Too High', '📈 Go HIGHER!')` |
+| `update_score(0, "Win", 2)` — winning on the first real guess (attempt counter is already 2 due to an off-by-one in how attempts are counted) | Score should reflect a first-try win, e.g. `80` | Score comes out as `70` — the formula and the pre-incremented attempt counter combine to under-reward an early win | `70` |
 
 ---
 
