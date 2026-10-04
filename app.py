@@ -17,7 +17,7 @@ st.sidebar.header("SETTINGS")
 
 difficulty = st.sidebar.selectbox(
     "Difficulty",
-    ["Easy","Normal","Hard"],
+    ["Easy", "Normal", "Hard"],
     index=1,
 )
 
@@ -36,8 +36,10 @@ st.sidebar.caption(f"Attempts Allowed: {attempt_limit}")
 if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
 
-# FIX: attempts now start at 0 (was 1), so first submitted guess is counted as attempt 1, not 2
-# Also fixes update_score downstream, which was under-sorcing early wins because of this being off by one
+# FIX: attempts now start at 0 (was 1)
+# so first submitted guess is counted as attempt 1, not 2
+# Also fixes update_score downstream
+# which was under-sorcing early wins because of this being off by one
 
 if "attempts" not in st.session_state:
     st.session_state.attempts = 0
@@ -77,7 +79,7 @@ raw_guess = st.text_input(
     key=f"guess_input_{difficulty}"
 )
 
-col1,col2,col3 = st.columns(3)
+col1, col2, col3 = st.columns(3)
 with col1:
     submit = st.button("Submit Guess")
 with col2:
@@ -87,10 +89,12 @@ with col3:
 
 
 if new_game:
-    # FIX: New Game used to always redraw from random.randint(1,100)
-    # regardless of difficulty, and never resent score/status.history, so replaying after a win/loss reused stale state and (since status stayed "won"/"lost") immediately re-triggered the game-over screen
+    # FIX: New Game used to always redraw from random.randint(1, 100)
+    # regardless of difficulty, and never reset score/status/history, so
+    # replaying after a win/loss reused stale state and (since status
+    # stayed "won"/"lost") immediately re-triggered the game-over screen.
     st.session_state.attempts = 0
-    st.session_state.secret = random.randint(low,high)
+    st.session_state.secret = random.randint(low, high)
     st.session_state.score = 0
     st.session_state.history = []
     st.session_state.status = "playing"
@@ -118,14 +122,17 @@ if submit:
     else:
         st.session_state.history.append(guess_int)
 
-        # FIX: Logic breaks here 
-        # secret used to be silently converted to a string every other attempt which broke the int comparison and forced a buggy lexicographic string-comp fallback
-        # now it always compares as the int as it is
+        # FIX: Logic breaks here
+        # secret used to be silently converted to a string every other
+        # attempt, which broke the int comparison and forced a buggy
+        # lexicographic string-comparison fallback
         outcome, message = check_guess(guess_int, st.session_state.secret)
 
         if show_hint:
             st.warning(message)
-            st.caption(temperature_label(guess_int, st.session_state.secret, low, high))
+            st.caption(temperature_label(
+                guess_int, st.session_state.secret, low, high
+            ))
 
         st.session_state.score = update_score(
             current_score=st.session_state.score,
