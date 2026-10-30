@@ -64,7 +64,7 @@ tests/test_game_logic.py::test_parse_guess_handles_extremely_large_number PASSED
 
 ## 🚀 Stretch Features
 
- -[x] Challenge 1
+- [x] Challenge 1
 - [x] Challenge 2
 - [x] Challenge 3
 - [x] Challenge 4 - Added a Hot/Cold temperature hint (`temperature_label` in `logic_utils.py`) shown as a caption under the Too High/Too Low warning in `app.py`. It scales distance-to-secret against the difficulty's range so "Hot" means the same relative closeness on Easy and Hard. Also added a live "Guess History" list in the sidebar (`app.py`, rendered from `st.session_state.history`) so players can see their past guesses without digging into Developer Debug Info.
